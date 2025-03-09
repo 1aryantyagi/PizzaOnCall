@@ -1,0 +1,4 @@
+crewai
+flask
+python-dotenv
+langchain
