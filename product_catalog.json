@@ -1,191 +1,50 @@
-{
-    "pizzas": [
-        {
-            "id": "PZ-001",
-            "name": "Classic Pepperoni",
-            "category": "Meat Lovers",
-            "description": "Traditional pepperoni with extra cheese and signature sauce",
-            "sizes": {
-                "small": 12.99,
-                "medium": 16.99,
-                "large": 20.99
-            },
-            "toppings": [
-                "pepperoni",
-                "mozzarella",
-                "tomato sauce"
-            ],
-            "spice_level": 2,
-            "cheese_rating": 4,
-            "customizations": {
-                "crust": {
-                    "hand-tossed": 0.00,
-                    "thin": 1.50,
-                    "stuffed": 3.00,
-                    "gluten-free": 2.50
-                },
-                "extra_cheese": 2.00,
-                "premium_toppings": {
-                    "double_pepperoni": 3.00,
-                    "bacon": 2.50,
-                    "sausage": 2.00
-                }
-            }
-        },
-        {
-            "id": "PZ-002",
-            "name": "Hawaiian Paradise",
-            "category": "Specialty",
-            "description": "Sweet pineapple and savory ham combination",
-            "sizes": {
-                "small": 14.99,
-                "medium": 18.99,
-                "large": 22.99
-            },
-            "toppings": [
-                "ham",
-                "pineapple",
-                "mozzarella",
-                "tomato sauce"
-            ],
-            "spice_level": 0,
-            "cheese_rating": 3,
-            "customizations": {
-                "crust": {
-                    "hand-tossed": 0.00,
-                    "thin": 1.50,
-                    "stuffed": 3.00
-                },
-                "extra_cheese": 2.00,
-                "premium_toppings": {
-                    "bacon": 2.50,
-                    "jalapenos": 1.75
-                }
-            }
-        },
-        {
-            "id": "PZ-003",
-            "name": "Veggie Supreme",
-            "category": "Vegetarian",
-            "description": "Loaded with fresh vegetables and feta cheese",
-            "sizes": {
-                "small": 15.99,
-                "medium": 19.99,
-                "large": 23.99
-            },
-            "toppings": [
-                "mushrooms",
-                "bell peppers",
-                "onions",
-                "olives",
-                "feta"
-            ],
-            "spice_level": 1,
-            "cheese_rating": 4,
-            "customizations": {
-                "crust": {
-                    "hand-tossed": 0.00,
-                    "thin": 1.50,
-                    "whole_wheat": 2.00
-                },
-                "extra_cheese": 2.00,
-                "premium_toppings": {
-                    "artichoke": 3.00,
-                    "sun-dried_tomatoes": 2.50
-                }
-            }
-        }
-    ],
-    "addons": {
-        "dips": [
-            {
-                "name": "Garlic Ranch",
-                "price": 1.99
-            },
-            {
-                "name": "Spicy Marinara",
-                "price": 1.50
-            },
-            {
-                "name": "Cheesy Jalapeno",
-                "price": 2.25
-            }
-        ],
-        "sides": [
-            {
-                "name": "Garlic Knots (6pc)",
-                "price": 5.99
-            },
-            {
-                "name": "Chicken Wings (8pc)",
-                "price": 8.99
-            },
-            {
-                "name": "Stuffed Cheese Bread",
-                "price": 6.50
-            }
-        ],
-        "drinks": [
-            {
-                "name": "Coke (2L)",
-                "price": 3.99
-            },
-            {
-                "name": "Iced Tea (1.5L)",
-                "price": 3.50
-            },
-            {
-                "name": "Sparkling Water",
-                "price": 2.99
-            }
-        ]
+[
+    {
+        "name": "Classic Pepperoni",
+        "description": "Traditional pepperoni & extra cheese"
     },
-    "combo_deals": [
-        {
-            "name": "Family Feast",
-            "includes": [
-                "1 large pizza",
-                "2 sides",
-                "2 drinks"
-            ],
-            "discount": 7.99,
-            "price": 39.99
-        },
-        {
-            "name": "Lunch Special",
-            "includes": [
-                "1 medium pizza",
-                "1 side",
-                "1 drink"
-            ],
-            "discount": 5.00,
-            "price": 24.99
-        }
-    ],
-    "dietary_options": {
-        "gluten_free": {
-            "crust": 3.00,
-            "toppings": [
-                "special_cheese",
-                "veggies"
-            ]
-        },
-        "vegan": {
-            "cheese_substitute": 2.50,
-            "protein_options": [
-                "plant-based_pepperoni",
-                "tofu"
-            ]
-        }
+    {
+        "name": "Hawaiian Paradise",
+        "description": "Sweet pineapple & savory ham"
     },
-    "special_offers": {
-        "happy_hour": {
-            "times": "2pm-5pm Weekdays",
-            "discount": 15
-        },
-        "weekend_special": {
-            "description": "Buy 2 large pizzas get 1 side free",
-            "required_purchase": 2
-        }
+    {
+        "name": "Veggie Supreme",
+        "description": "Loaded with fresh veggies & feta"
+    },
+    {
+        "name": "BBQ Chicken Delight",
+        "description": "Grilled chicken, BBQ sauce & red onions"
+    },
+    {
+        "name": "Four Cheese Heaven",
+        "description": "Mozzarella, cheddar, parmesan & gouda"
+    },
+    {
+        "name": "Spicy Jalapeño Fiesta",
+        "description": "Jalapeños, pepperoni & hot sauce"
+    },
+    {
+        "name": "Margherita Classic",
+        "description": "Tomato, basil & fresh mozzarella"
+    },
+    {
+        "name": "Meat Lover's Feast",
+        "description": "Pepperoni, sausage, bacon & ham"
+    },
+    {
+        "name": "Mediterranean Delight",
+        "description": "Olives, feta, sun-dried tomatoes & spinach"
+    },
+    {
+        "name": "Buffalo Chicken Special",
+        "description": "Buffalo chicken, ranch & blue cheese"
+    },
+    {
+        "name": "Truffle Mushroom",
+        "description": "Mushrooms, truffle oil & parmesan"
+    },
+    {
+        "name": "Pesto Veggie",
+        "description": "Pesto sauce, roasted veggies & feta"
     }
-}
+]

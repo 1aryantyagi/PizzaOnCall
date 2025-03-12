@@ -46,53 +46,52 @@ class DeliveryTool:
         return {"eta": f"{random.randint(25, 45)} minutes", "status": "preparing"}
 
 class ProductTool:
-    CATALOG_FILE = "product_catalog.json"
+    MENU_FILE = "product_catalog.json"
 
     @classmethod
-    def load_catalog(cls):
-        """Loads the product catalog from a JSON file and extracts the pizza list."""
+    def load_menu(cls):
+        """Loads the pizza menu from a JSON file."""
         try:
-            with open(cls.CATALOG_FILE, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-                # Extract only the pizzas list
-                if "pizzas" in data and isinstance(data["pizzas"], list):
-                    cls.CATALOG = data["pizzas"]
-                else:
-                    cls.CATALOG = []  # Handle unexpected JSON format
-                    print("Error: JSON file does not contain a valid pizzas list.")
-
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            cls.CATALOG = []
-            print(f"Error loading catalog: {e}")
+            with open(cls.MENU_FILE, "r", encoding="utf-8") as file:
+                menu = json.load(file)
+                if not isinstance(menu, list):
+                    return None, "Error: Invalid menu format."
+                return menu, None
+        except (FileNotFoundError, json.JSONDecodeError):
+            return None, "Error: Unable to load menu."
 
     @classmethod
-    def search_product(cls, query: str) -> str:
-        """Search for a product with improved matching."""
-        cls.load_catalog()
+    def search_pizza(cls, query: str) -> str:
+        """Searches for a pizza based on a query."""
+        menu, error = cls.load_menu()
+        if error:
+            return error
+        
         query = query.lower()
         results = []
         
-        for item in cls.CATALOG:
-            name = item["name"].lower()
-            description = item["description"].lower()
-            
+        for item in menu:
+            name, description = item["name"].lower(), item["description"].lower()
             if query in name or query in description:
-                score = 2  # High score for direct match
+                score = 2
             else:
-                name_score = difflib.SequenceMatcher(None, query, name).ratio()
-                desc_score = difflib.SequenceMatcher(None, query, description).ratio()
-                score = max(name_score, desc_score)
-
-            if score > 0.4:
-                details = (
-                    f"🍕 **{item['name']}**\n"
-                    f"- {item['description']}\n"
-                    f"- Sizes: {', '.join(item['sizes'].keys())}\n"
-                    f"- Toppings: {', '.join(item['toppings'])}\n"
-                    f"- Price: Small: ${item['sizes']['small']:.2f}, Medium: ${item['sizes']['medium']:.2f}, Large: ${item['sizes']['large']:.2f}"
+                score = max(
+                    difflib.SequenceMatcher(None, query, name).ratio(),
+                    difflib.SequenceMatcher(None, query, description).ratio()
                 )
-                results.append((score, details))
+            if score > 0.4:
+                results.append((score, f"🍕 **{item['name']}**\n- {item['description']}"))
 
-        results.sort(reverse=True, key=lambda x: x[0])
-        return "\n\n".join([res[1] for res in results]) if results else "No matching items found"
+        return "\n\n".join(res[1] for res in sorted(results, reverse=True, key=lambda x: x[0])) or "No matching pizzas found."
+    
+    @classmethod
+    def list_all_pizzas(cls) -> str:
+        """Lists all pizzas on the menu."""
+        menu, error = cls.load_menu()
+        if error:
+            return error
+        
+        if not menu:
+            return "No pizzas available."
+        
+        return "We have " + ", ".join(f"{i+1}- {item['name']}" for i, item in enumerate(menu)) + "."
