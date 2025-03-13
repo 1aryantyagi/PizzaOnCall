@@ -2,42 +2,95 @@ import random
 import json
 import difflib
 
+import json
+
 class CartTool:
-    cart_data = {}  # Store cart items in memory
+    cart_data = {}  # Stores cart data per session
+    PRICES = {}  # Stores price data for items
+    PRICE_FILE = "product_catalog.json"  # File path for price data
 
     @staticmethod
     def add_item(session_id: str, item_name: str, quantity: int):
+        """Adds an item to the cart after validating against the menu."""
+        item_name = item_name.strip().lower()
+        CartTool.load_prices_from_json(CartTool.PRICE_FILE)
+        
+        if item_name not in CartTool.PRICES:
+            return f"Error: {item_name} is not in the menu."
+        
+        print(f"[DEBUG] Before adding: {CartTool.cart_data}")
         if session_id not in CartTool.cart_data:
             CartTool.cart_data[session_id] = {}
         
         CartTool.cart_data[session_id][item_name] = CartTool.cart_data[session_id].get(item_name, 0) + quantity
+        print(f"[DEBUG] After adding {quantity} {item_name}: {CartTool.cart_data}")
         return f"Added {quantity} {item_name}(s)"
 
     @staticmethod
+    def delete_item(session_id: str, item_name: str):
+        """Deletes an item from the cart after validating against the menu."""
+        item_name = item_name.strip().lower()
+        CartTool.load_prices_from_json(CartTool.PRICE_FILE)
+        
+        if item_name not in CartTool.PRICES:
+            return f"Error: {item_name} is not in the menu."
+        
+        print(f"[DEBUG] Before deleting: {CartTool.cart_data}")
+        if session_id in CartTool.cart_data and item_name in CartTool.cart_data[session_id]:
+            del CartTool.cart_data[session_id][item_name]
+            print(f"[DEBUG] After deleting {item_name}: {CartTool.cart_data}")
+            return f"Deleted {item_name} from the cart."
+        
+        print(f"[DEBUG] Delete failed: {item_name} not found in {session_id}'s cart.")
+        return f"{item_name} not found in the cart."
+
+    @staticmethod
     def get_cart(session_id: str):
+        """Retrieves the cart items for a session."""
+        print(f"[DEBUG] Fetching cart for session {session_id}: {CartTool.cart_data.get(session_id, {})}")
         items = CartTool.cart_data.get(session_id, {})
-        return "\n".join([f"{qty}x {name}" for name, qty in items.items()]) or "Empty"
+        return "Your cart is empty." if not items else "\n".join([f"{qty}x {name}" for name, qty in items.items()])
 
-
-class PricingTool:
-    PRICES = {
-        "large Margherita": 14.99,
-        "extra cheese": 2.50,
-        "Coke": 3.00,
-        "garlic bread": 5.50
-    }
+    @staticmethod
+    def load_prices_from_json(file_path):
+        """Loads prices from a JSON file into the PRICES dictionary."""
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                json_data = json.load(file)
+            
+            if not isinstance(json_data, list):
+                print("[ERROR] Price data must be a list of dictionaries!")
+                return
+            
+            CartTool.PRICES = {item["name"].strip().lower(): float(item["price"]) for item in json_data}
+            print(f"[DEBUG] Prices loaded: {CartTool.PRICES}")
+        
+        except FileNotFoundError:
+            print(f"[ERROR] File '{file_path}' not found!")
+        except json.JSONDecodeError:
+            print("[ERROR] Invalid JSON format in price file!")
+        except (KeyError, ValueError) as e:
+            print(f"[ERROR] Error processing price data: {e}")
 
     @staticmethod
     def calculate_total(session_id: str):
+        """Calculates the total cost of the cart items."""
+        CartTool.load_prices_from_json(CartTool.PRICE_FILE)
         cart_items = CartTool.cart_data.get(session_id, {})
-        total = sum(PricingTool.PRICES.get(item, 0) * qty for item, qty in cart_items.items())
-        return round(total, 2)
+        
+        if not cart_items:
+            return "Your cart is empty."
+        
+        total = sum(CartTool.PRICES.get(item, 0) * qty for item, qty in cart_items.items())
+        return f"Total amount: ${total:.2f}"
+
+
 
 
 class PaymentTool:
     @staticmethod
     def process_payment(session_id: str, amount: float):
-        return True  # Mock payment processing
+        return "Payment processed successfully."
 
 
 class DeliveryTool:
@@ -61,7 +114,7 @@ class ProductTool:
             return None, "Error: Unable to load menu."
 
     @classmethod
-    def search_pizza(cls, query: str) -> str:
+    def search_product(cls, query: str) -> str:
         """Searches for a pizza based on a query."""
         menu, error = cls.load_menu()
         if error:
