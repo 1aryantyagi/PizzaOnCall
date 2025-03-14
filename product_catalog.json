@@ -2,61 +2,175 @@
     {
         "name": "Classic Pepperoni",
         "description": "A timeless favorite featuring crispy, spicy pepperoni generously layered over a rich tomato sauce and gooey, melted mozzarella cheese. Finished with a hint of oregano and a golden crust for the perfect bite.",
-        "price": 499
+        "price": 499,
+        "category": "pizza"
     },
     {
         "name": "Hawaiian Paradise",
         "description": "A delightful combination of sweet, juicy pineapple chunks paired with savory, smoky ham, all resting on a bed of tangy marinara sauce and melty mozzarella. A tropical twist that brings the perfect balance of sweet and savory flavors.",
-        "price": 549
+        "price": 549,
+        "category": "pizza"
     },
     {
         "name": "Veggie Supreme",
         "description": "A garden-fresh delight loaded with crunchy bell peppers, mushrooms, onions, black olives, and ripe tomatoes. Topped with crumbled feta cheese and a hint of Italian herbs, making it a perfect choice for veggie lovers.",
-        "price": 529
+        "price": 529,
+        "category": "pizza"
     },
     {
         "name": "BBQ Chicken Delight",
         "description": "Tender grilled chicken, smoky BBQ sauce, and thinly sliced red onions come together for a bold and flavorful experience. Topped with melted mozzarella and a drizzle of extra BBQ sauce for an irresistible smoky-sweet taste.",
-        "price": 569
+        "price": 569,
+        "category": "pizza"
     },
     {
         "name": "Four Cheese Heaven",
         "description": "A cheese lover's dream with a rich blend of mozzarella, sharp cheddar, aged parmesan, and creamy gouda. Melted to perfection over a thin, crispy crust with a touch of garlic butter for an extra cheesy indulgence.",
-        "price": 579
+        "price": 579,
+        "category": "pizza"
     },
     {
         "name": "Spicy Jalapeño Fiesta",
         "description": "For those who crave heat, this fiery pizza features sliced jalapeños, spicy pepperoni, and a drizzle of hot sauce over a rich tomato base. Finished with gooey mozzarella and a dash of chili flakes for an extra kick.",
-        "price": 559
+        "price": 559,
+        "category": "pizza"
     },
     {
         "name": "Margherita Classic",
         "description": "A simple yet elegant masterpiece with fresh tomatoes, aromatic basil, and creamy mozzarella on a thin, crispy crust. Drizzled with extra virgin olive oil and a sprinkle of sea salt for an authentic Italian experience.",
-        "price": 499
+        "price": 499,
+        "category": "pizza"
     },
     {
         "name": "Meat Lover's Feast",
         "description": "A carnivore’s dream with a hearty mix of pepperoni, juicy sausage, crispy bacon, and smoked ham. Layered over a rich tomato sauce and melted cheese, making every bite a satisfying meaty explosion.",
-        "price": 599
+        "price": 599,
+        "category": "pizza"
     },
     {
         "name": "Mediterranean Delight",
         "description": "A Mediterranean-inspired treat featuring briny black olives, crumbled feta, sun-dried tomatoes, and fresh spinach. Topped with a drizzle of olive oil and a blend of Mediterranean herbs for a rich, tangy, and earthy flavor.",
-        "price": 549
+        "price": 549,
+        "category": "pizza"
     },
     {
         "name": "Buffalo Chicken Special",
         "description": "A bold and zesty pizza topped with spicy buffalo chicken, a drizzle of creamy ranch dressing, and tangy blue cheese crumbles. The perfect combination of heat and coolness on a crispy, golden crust.",
-        "price": 579
+        "price": 579,
+        "category": "pizza"
     },
     {
         "name": "Truffle Mushroom",
         "description": "A gourmet delight featuring earthy mushrooms sautéed in rich truffle oil and topped with aged parmesan. Baked to perfection on a thin crust, delivering a luxurious and aromatic experience in every bite.",
-        "price": 599
+        "price": 599,
+        "category": "pizza"
     },
     {
         "name": "Pesto Veggie",
         "description": "A fresh and flavorful pizza with a vibrant pesto sauce base, roasted bell peppers, zucchini, and crumbled feta. A delicious and herbaceous option for those who love the taste of fresh basil and roasted vegetables.",
-        "price": 559
+        "price": 559,
+        "category": "pizza"
+    },
+    {
+        "name": "Cheese Burst",
+        "description": "Extra cheese stuffed in the crust",
+        "price": 150,
+        "category": "customization"
+    },
+    {
+        "name": "Cheese Blanket",
+        "description": "A layer of cheese covering the entire pizza",
+        "price": 250,
+        "category": "customization"
+    },
+    {
+        "name": "Paneer Topping",
+        "description": "Cottage cheese cubes topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Jalapeno Topping",
+        "description": "Spicy jalapeno slices topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Extra Cheese Topping",
+        "description": "Extra cheese topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Chicken Topping",
+        "description": "Grilled chicken chunks topping",
+        "price": 100,
+        "category": "topping"
+    },
+    {
+        "name": "Mushroom Topping",
+        "description": "Sliced mushroom topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Pepperoni Topping",
+        "description": "Spicy pepperoni slices topping",
+        "price": 100,
+        "category": "topping"
+    },
+    {
+        "name": "Sausage Topping",
+        "description": "Juicy sausage chunks topping",
+        "price": 100,
+        "category": "topping"
+    },
+    {
+        "name": "Bacon Topping",
+        "description": "Crispy bacon strips topping",
+        "price": 100,
+        "category": "topping"
+    },
+    {
+        "name": "Ham Topping",
+        "description": "Smoked ham slices topping",
+        "price": 100,
+        "category": "topping"
+    },
+    {
+        "name": "Pineapple Topping",
+        "description": "Sweet pineapple chunks topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Bell Pepper Topping",
+        "description": "Crunchy bell pepper slices topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Onion Topping",
+        "description": "Thinly sliced onion topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Black Olive Topping",
+        "description": "Briny black olive slices topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Tomato Topping",
+        "description": "Ripe tomato slices topping",
+        "price": 80,
+        "category": "topping"
+    },
+    {
+        "name": "Feta Cheese Topping",
+        "description": "Crumbled feta cheese topping",
+        "price": 80,
+        "category": "topping"
     }
 ]

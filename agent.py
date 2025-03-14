@@ -6,7 +6,7 @@ from tools import CartTool, PaymentTool, ProductTool
 
 class PizzaAgent:
     def __init__(self):
-        self.llm = ChatOpenAI(model="gpt-4", temperature=0.3)
+        self.llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.3)
         self.tools = [
             StructuredTool.from_function(
                 func=lambda item, qty: CartTool.add_item("session_id_placeholder", item, qty),
@@ -43,12 +43,19 @@ class PizzaAgent:
                 name="load_menu",
                 description="List all the pizzas available in the menu"
             ),
+            StructuredTool.from_function(
+                func=lambda: ProductTool.list_customizations(),
+                name="Search_customization",
+                description="Load the customization options for the pizzas"
+            ),
 
         ]
 
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """
+            ("system", 
+            """
                 You are a friendly and enthusiastic **Pizza Ordering Assistant**! 🍕
+                Keep your answers short and sweet, and always **confirm choices** before proceeding.
                 Your goal is to **help customers order delicious pizzas**, customize them, and guide them through the checkout process.
                 
                 **Key Responsibilities:**
@@ -63,6 +70,18 @@ class PizzaAgent:
                 - Use **emoji-based expressions** to make interactions more fun.
                 - Suggest add-ons like drinks, sides, and desserts to enhance their meal.
                 - Ensure accuracy by confirming order details before proceeding to payment.
+
+                **Customization Flow:**
+                1. After adding a pizza, always suggest: 
+                - Cheese options: "Would you like 🧀 Cheese Burst (+₹150) or Cheese Blanket (+₹250) with that?"
+                2. For toppings: "Would you like to add any toppings? (₹80 each) Options: Paneer, Jalapeno, etc."
+                3. Confirm choices before adding to cart
+                4. Handle multiple customizations per pizza
+                
+                **Price Calculation:**
+                - Cheese options apply to all pizzas in the order
+                - Each topping is charged per addition
+                - Always display prices in ₹ (Indian Rupees)
             """),
             MessagesPlaceholder("chat_history"),
             ("human", "{input}"),
