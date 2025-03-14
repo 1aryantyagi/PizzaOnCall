@@ -4,25 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Chatbot</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>🍕 PizzaBot Palace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Comic+Neue:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 
 <body>
-    <div class="chat-container">
-        <header>
-            <h1>🍕 PizzaBot</h1>
-        </header>
-        <div class="chat-box" id="chat-box">
-            <div class="bot-message">Hello! I'm PizzaBot. What would you like to order? 🍕</div>
+    <div class="phone-footer">📞 Order via Phone: <a href="tel:9090909090">9090909090</a></div>
+
+    <div class="container">
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>🍕 PizzaBot 3000</h2>
+                <div class="pizza-slice">🍕</div>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Type your pizza order here...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
         </div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()">🚀</button>
+
+        <!-- Menu Container -->
+        <div class="menu-container">
+            <h2>🍴 Our Delicious Menu</h2>
+            <div class="menu-items" id="menuItems"></div>
+        </div>
+
+        <!-- Cart Container -->
+        <div class="cart-container">
+            <h2>🛒 Your Order</h2>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-total" id="cartTotal"></div>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="/static/script.js"></script>
 </body>
 
 </html>

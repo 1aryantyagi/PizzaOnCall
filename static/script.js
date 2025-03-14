@@ -1,47 +1,78 @@
-function handleKeyPress(event) {
-    if (event.key === "Enter") {
-        sendMessage();
+document.addEventListener('DOMContentLoaded', () => {
+    loadMenu();
+    setInterval(updateCart, 3000);
+});
+
+async function loadMenu() {
+    try {
+        const response = await fetch('/menu');
+        const menu = await response.json();
+        const menuContainer = document.getElementById('menuItems');
+
+        menuContainer.innerHTML = `
+            <h3>🍕 Pizzas</h3>
+            ${menu.pizzas}
+            <h3>🧀 Customizations</h3>
+            ${menu.customizations}
+        `;
+    } catch (error) {
+        console.error('Error loading menu:', error);
     }
 }
 
-function sendMessage() {
-    let inputField = document.getElementById("user-input");
-    let message = inputField.value.trim();
+async function updateCart() {
+    try {
+        const response = await fetch('/cart');
+        const cart = await response.json();
+
+        document.getElementById('cartItems').textContent = cart.items;
+        document.getElementById('cartTotal').textContent = cart.total;
+    } catch (error) {
+        console.error('Error updating cart:', error);
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
     if (!message) return;
 
-    let chatBox = document.getElementById("chat-box");
+    // Add user message
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML += `
+        <div class="message user-message">
+            👤 ${message}
+        </div>
+    `;
 
-    // Append User Message
-    let userMessageDiv = document.createElement("div");
-    userMessageDiv.className = "user-message";
-    userMessageDiv.textContent = message;
-    chatBox.appendChild(userMessageDiv);
+    try {
+        const response = await fetch('/process_message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        });
 
-    inputField.value = "";
+        const data = await response.json();
+        chatMessages.innerHTML += `
+            <div class="message bot-message">
+                🤖 ${data.response}
+            </div>
+        `;
 
-    // Show Typing Animation
-    let typingDiv = document.createElement("div");
-    typingDiv.className = "bot-message typing";
-    typingDiv.textContent = "PizzaBot is typing...";
-    chatBox.appendChild(typingDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    fetch("/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: message })
-    })
-        .then(response => response.json())
-        .then(data => {
-            chatBox.removeChild(typingDiv); // Remove typing animation
-
-            let botMessageDiv = document.createElement("div");
-            botMessageDiv.className = "bot-message";
-            botMessageDiv.textContent = data.response;
-            chatBox.appendChild(botMessageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        })
-        .catch(error => console.error("Error:", error));
+        // Scroll to bottom and clear input
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        input.value = '';
+    } catch (error) {
+        console.error('Error:', error);
+        chatMessages.innerHTML += `
+            <div class="message bot-message error">
+                ❌ Oops! Something went wrong. Please try again.
+            </div>
+        `;
+    }
 }
+
+// Handle Enter key
+document.getElementById('userInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
