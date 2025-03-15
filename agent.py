@@ -29,9 +29,9 @@ class PizzaAgent:
                 description="Calculate the total order price"
             ),
             StructuredTool.from_function(
-                func=lambda amt: PaymentTool.process_payment("session_id_placeholder", amt),
-                name="process_payment",
-                description="Process payment for the order"
+            func=lambda method, upi_id: PaymentTool.process_payment("session_id_placeholder", method, upi_id),
+            name="process_payment",
+            description="Process payment for the order. Ask for the payment method (UPI or COD) and UPI ID if the payment method is UPI"
             ),
             StructuredTool.from_function(
                 func=lambda query: ProductTool.search_product(query),

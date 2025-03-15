@@ -2,3 +2,9 @@ crewai
 flask
 python-dotenv
 langchain
+razorpay
+difflib
+jason
+time
+random
+os

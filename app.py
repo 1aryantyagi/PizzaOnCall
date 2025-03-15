@@ -12,9 +12,9 @@ pizza_agent = PizzaAgent()
 
 @app.route('/')
 def index():
-    # Generate session ID if not exists
     if 'session_id' not in session:
         session['session_id'] = str(uuid.uuid4())
+        print(f"New session created: {session['session_id']}")
     return render_template('index.html')
 
 @app.route('/process_message', methods=['POST'])
