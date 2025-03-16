@@ -5,15 +5,20 @@ import difflib
 import razorpay
 from razorpay.errors import BadRequestError
 import time
+import psycopg2
+from psycopg2 import sql
+import uuid
+from typing import Dict, Optional
+from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
 class CartTool:
-    cart_data = {}  # Stores carts by session ID
-    PRODUCTS = {}    # Product data loaded from JSON (key: lowercase name)
-    PIZZAS = {}      # Pizza products
-    CUSTOMIZATIONS = {}  # Customization products
-    TOPPINGS = {}    # Topping products
+    cart_data = {}
+    PRODUCTS = {}
+    PIZZAS = {}
+    CUSTOMIZATIONS = {}
+    TOPPINGS = {}
     PRICE_FILE = "product_catalog.json"
 
     @classmethod
@@ -33,7 +38,7 @@ class CartTool:
                         "price": item["price"],
                         "category": item["category"]
                     }
-                # Create category-specific lookups
+
                 cls.PIZZAS = {k: v for k, v in cls.PRODUCTS.items() if v["category"] == "pizza"}
                 cls.CUSTOMIZATIONS = {k: v for k, v in cls.PRODUCTS.items() if v["category"] == "customization"}
                 cls.TOPPINGS = {k: v for k, v in cls.PRODUCTS.items() if v["category"] == "topping"}
@@ -43,29 +48,25 @@ class CartTool:
     @staticmethod
     def add_item(session_id: str, item_name: str, quantity: int):
         """Adds an item to the cart with proper parsing of pizza, customizations, and toppings."""
-        CartTool.load_products()  # Ensure data is loaded
+        CartTool.load_products()
         item_name = item_name.strip().lower()
 
-        # Split into base pizza and modifiers
         parts = item_name.split(" with ")
         base_part = parts[0].strip()
         modifiers = []
         if len(parts) > 1:
             modifiers = [m.strip() for m in parts[1].split(" and ")]
 
-        # Ensure base_part is a valid pizza
         if base_part not in CartTool.PIZZAS:
             return f"Error: '{base_part}' is not a valid pizza."
 
         base_product = CartTool.PRODUCTS[base_part]
         base_name = base_product["name"]
 
-        # Validate modifiers
         valid_modifiers = []
         for mod in modifiers:
             mod_lower = mod.lower()
             
-            # Fuzzy match against PRODUCTS (handling singular/plural naming)
             product_match = next(
                 (p for p in CartTool.PRODUCTS.values() if mod_lower in p["name"].lower()), None
             )
@@ -73,19 +74,16 @@ class CartTool:
             if not product_match:
                 return f"Error: Modifier '{mod}' not found."
             
-            # Ensure the modifier is a valid topping/customization
             if product_match["category"] not in ["topping", "customization"]:
                 return f"Error: '{mod}' is not a valid topping or customization."
             
             valid_modifiers.append(product_match["name"])
 
-        # Update cart
         cart = CartTool.cart_data.setdefault(session_id, {})
         cart[base_name] = cart.get(base_name, 0) + quantity
         for mod in valid_modifiers:
             cart[mod] = cart.get(mod, 0) + quantity
 
-        # Build response
         response = f"Added {quantity} {base_name}"
         if valid_modifiers:
             response += f" with {', '.join(valid_modifiers)}"
@@ -138,7 +136,7 @@ class ProductTool:
                     menu = json.load(file)
                     if not isinstance(menu, list):
                         return None, "Error: Invalid menu format."
-                    cls._menu_cache = menu  # Cache the menu after loading
+                    cls._menu_cache = menu
             except (FileNotFoundError, json.JSONDecodeError):
                 return None, "Error: Unable to load menu."
         
@@ -234,24 +232,23 @@ class PaymentTool:
             return None, "Error: Invalid total amount format"
 
     @staticmethod
-    def process_payment(session_id: str, method: str, upi_id: str = None) -> str:
-        """Process payment through Razorpay API. Supports UPI and COD both the methods."""
-        # Validate cart and get amount
+    def process_payment(session_id: str,method: str,name: str,address: str,phone: str,upi_id: str = None) -> str:
+        """Process payment with user details."""
+
         amount, error = PaymentTool._get_cart_amount(session_id)
         if error:
             return error
-
-        # Process payment method
+            
         method = method.lower()
         if method == "upi":
-            return PaymentTool._process_upi(session_id, amount, upi_id)
+            return PaymentTool._process_upi(session_id, amount, upi_id, name, address, phone)
         elif method == "cod":
-            return PaymentTool._process_cod(session_id, amount)
+            return PaymentTool._process_cod(session_id, amount, name, address, phone)
         else:
-            return "Error: Invalid payment method. Choose 'UPI' or 'COD'"
+            return "Error: Invalid payment method."
 
     @staticmethod
-    def _process_upi(session_id: str, amount: float, upi_id: str) -> str:
+    def _process_upi(session_id: str, amount: float, upi_id: str, name: str, address: str, phone: str) -> str:
         """Handle UPI payment through Razorpay"""
         if not upi_id or '@' not in upi_id:
             return "Error: Invalid UPI ID format (should be xxx@bank)"
@@ -260,23 +257,25 @@ class PaymentTool:
                                     PaymentTool.RAZORPAY_KEY_SECRET))
 
         try:
-            # Create payment order
             order = client.order.create({
-                "amount": int(amount * 100),  # Convert to paisa
+                "amount": int(amount * 100),
                 "currency": "INR",
                 "payment_capture": 1,
                 "method": "upi"
             })
             print("ORDER RESPONSE:", order)
 
-            # Monitor payment status (simplified)
-            time.sleep(2)  # Simulate processing time
+            time.sleep(2)
             payment = client.order.payments(order["id"])[0]
 
             if payment["status"] == "captured":
-                CartTool.cart_data.pop(session_id, None)  # Clear cart
-                return (f"✅ Payment successful! Transaction ID: {payment['id']}\n"
-                        f"Amount: ₹{amount:.2f} | UPI: {upi_id}")
+                items = CartTool.cart_data.get(session_id, {})
+                order_id = DeliveryTool.log_order(session_id,items,
+                    {"name": name, "address": address, "phone": phone},
+                    "paid"
+                )
+                CartTool.cart_data.pop(session_id, None)
+                return f"Payment successful! Order ID: {order_id}"
             
             return ("⚠️ Payment pending. Complete payment in your UPI app\n"
                     f"Order ID: {order['id']} | Amount: ₹{amount:.2f}")
@@ -287,15 +286,80 @@ class PaymentTool:
             return f"Error processing payment: {str(e)}"
 
     @staticmethod
-    def _process_cod(session_id: str, amount: float) -> str:
-        """Handle Cash on Delivery"""
-        CartTool.cart_data.pop(session_id, None)  # Clear cart
-        return (f"🛒 COD Confirmed!\n"
-                f"Amount: ₹{amount:.2f}\n"
-                "Pay when you receive your order. Delivery time: 30-45 mins")
-
+    def _process_cod(session_id: str, amount: float, name: str, address: str, phone: str) -> str:
+        items = CartTool.cart_data.get(session_id, {})
+        order_id = DeliveryTool.log_order(
+            session_id,
+            items,
+            {"name": name, "address": address, "phone": phone},
+            "pending"
+        )
+        CartTool.cart_data.pop(session_id, None)
+        return f"COD confirmed! Order ID: {order_id}"
 
 class DeliveryTool:
+    DB_URL = os.getenv("RENDER_DB_URL")
+
     @staticmethod
-    def schedule_delivery(session_id: str):
-        return {"eta": f"{random.randint(25, 45)} minutes", "status": "preparing"}
+    def _get_db_connection():
+        """Establishes a database connection."""
+        return psycopg2.connect(DeliveryTool.DB_URL)
+
+    @staticmethod
+    def setup_database():
+        """Creates orders table if it doesn't exist."""
+        with DeliveryTool._get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS orders (
+                        order_id SERIAL PRIMARY KEY,
+                        session_id TEXT NOT NULL,
+                        product_details JSONB NOT NULL,
+                        user_details JSONB NOT NULL,
+                        payment_status TEXT CHECK (payment_status IN ('paid', 'pending', 'failed')),
+                        delivery_status TEXT DEFAULT 'pending',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                """)
+                conn.commit()
+
+    @staticmethod
+    def log_order(session_id, products, user_details, payment_status):
+        """Logs an order into the database."""
+        with DeliveryTool._get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO orders (session_id, product_details, user_details, payment_status, delivery_status)
+                    VALUES (%s, %s, %s, %s, %s)
+                    RETURNING order_id;
+                """, (session_id, json.dumps(products), json.dumps(user_details), payment_status, "pending"))
+                
+                order_id = cur.fetchone()[0]
+                conn.commit()
+                return order_id
+
+    @staticmethod
+    def update_delivery_status(order_id, status):
+        """Updates the delivery status of an order."""
+        with DeliveryTool._get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE orders SET delivery_status = %s WHERE order_id = %s;
+                """, (status, order_id))
+                conn.commit()
+                return f"Order {order_id} delivery status updated to {status}."
+
+    @staticmethod
+    def get_orders(session_id):
+        """Fetches all orders for a given session."""
+        with DeliveryTool._get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT order_id, product_details, user_details, payment_status, delivery_status, created_at
+                    FROM orders WHERE session_id = %s;
+                """, (session_id,))
+                
+                orders = cur.fetchall()
+                return [{"order_id": row[0], "products": row[1], "user": row[2], 
+                         "payment_status": row[3], "delivery_status": row[4], "created_at": row[5].isoformat()} 
+                        for row in orders]

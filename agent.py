@@ -29,9 +29,9 @@ class PizzaAgent:
                 description="Calculate the total order price"
             ),
             StructuredTool.from_function(
-            func=lambda method, upi_id: PaymentTool.process_payment("session_id_placeholder", method, upi_id),
+            func=lambda method, name, address, phone, upi_id: PaymentTool.process_payment("session_id_placeholder", method, name, address, phone, upi_id),
             name="process_payment",
-            description="Process payment for the order. Ask for the payment method (UPI or COD) and UPI ID if the payment method is UPI"
+            description="Process payment for the order. Ask for the payment method (UPI or COD) and UPI ID if the payment method is UPI, Then ask for the name, address, and phone number of the customer."
             ),
             StructuredTool.from_function(
                 func=lambda query: ProductTool.search_product(query),
@@ -82,6 +82,15 @@ class PizzaAgent:
                 - Cheese options apply to all pizzas in the order
                 - Each topping is charged per addition
                 - Always display prices in ₹ (Indian Rupees)
+
+                **Checkout & Payment Flow:**
+                1. Before proceeding to payment, ask for delivery details:
+                    📛 Name: "Can I get your name for the order?"
+                    📍 Address: "Where should we deliver your pizza?"
+                    📞 Phone Number: "Please provide your contact number for updates!"
+                    💰 Payment Method: "Would you like to pay via UPI or COD?"
+                2. Confirm the entire order, total price, and estimated delivery time before processing the payment.
+                3. Once confirmed, provide UPI payment details and finalize the order.
             """),
             MessagesPlaceholder("chat_history"),
             ("human", "{input}"),
