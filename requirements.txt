@@ -4,6 +4,4 @@ python-dotenv
 langchain
 razorpay
 jason
-time
-random
-os
+gunicorn
