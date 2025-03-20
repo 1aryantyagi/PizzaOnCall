@@ -5,3 +5,5 @@ langchain
 razorpay
 jason
 gunicorn
+langchain_openai
+psycopg2-binary
