@@ -1,73 +1,77 @@
-from flask import Flask, request, Response
+from flask import Flask, render_template, request, jsonify, session
 from twilio.twiml.voice_response import VoiceResponse, Gather
-from dotenv import load_dotenv
+import uuid
 from agent import PizzaAgent
+from tools import ProductTool, CartTool
+from dotenv import load_dotenv
 import os
+from hashlib import sha256
 
 load_dotenv()
 
 app = Flask(__name__)
-active_calls = {}
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'pizza_secret_123')
 
-@app.route('/voice/incoming', methods=['POST'])
-def handle_incoming_call():
-    """Handle initial phone call connection"""
-    call_sid = request.form.get('CallSid')
+pizza_agent = PizzaAgent()
+
+def get_session_id(phone_number):
+    """Generate consistent session ID from phone number"""
+    return sha256(phone_number.encode()).hexdigest()
+
+@app.route('/voice', methods=['GET', 'POST'])
+def voice():
+    """Handle incoming voice calls"""
     caller_number = request.form.get('From')
-    print(f"Incoming call from {caller_number} with SID {call_sid}")
-
-    if not call_sid:
-        return error_response("Invalid request.")
-
-    active_calls[call_sid] = PizzaAgent()
+    print(f"Incoming call from: {caller_number}")
 
     response = VoiceResponse()
+    
     gather = Gather(
         input='speech',
-        action='/voice/handle-input',
+        action='/handle_input',
         method='POST',
-        speech_timeout=5,
-        
+        speechTimeout='auto'
     )
-    gather.say("Welcome! I am your virtual pizza assistant. How can I assist you today?")
+    gather.say("Welcome to PizzaBot! What would you like to order today?")
     response.append(gather)
+    
+    response.redirect('/voice')
+    return str(response)
 
-    return Response(str(response), mimetype='text/xml')
-
-@app.route('/voice/handle-input', methods=['POST'])
-def handle_voice_input():
-    """Process speech input and generate response"""
-    call_sid = request.form.get('CallSid')
-    speech_text = request.form.get('SpeechResult', '')
-
-    agent = active_calls.get(call_sid)
-    if not agent:
-        return error_response("Session expired. Please call back.")
-
-    try:
-        text_response = agent.process_message(call_sid, speech_text)
-        text_response = text_response.get('output', '')
-    except Exception:
-        return error_response("Error processing request.")
-
+@app.route('/handle_input', methods=['POST'])
+def handle_input():
+    """Process user speech input and generate response"""
     response = VoiceResponse()
+    session_id = get_session_id(request.form.get('From', ''))
+    
+    user_input = request.form.get('SpeechResult', '')
+    print(f"User input: {user_input}")
+    agent_response = pizza_agent.process_message(session_id, user_input)
+    
     gather = Gather(
         input='speech',
-        action='/voice/handle-input',
+        action='/handle_input',
         method='POST',
-        speech_timeout=5
+        speechTimeout='auto'
     )
-    gather.say(text_response)
+
+    gather.say(agent_response.get('output', 'Sorry, I didn\'t get that. Can you please repeat?'))
     response.append(gather)
 
-    return Response(str(response), mimetype='text/xml')
+    response.redirect('/voice')
+    return str(response)
 
-def error_response(message):
-    """Create error response"""
-    response = VoiceResponse()
-    response.say(message)
-    response.hangup()
-    return Response(str(response), mimetype='text/xml')
+@app.route('/process_message', methods=['POST'])
+def process_message():
+    data = request.json
+    user_input = data.get('message')
+    session_id = session['session_id']
+    
+    response = pizza_agent.process_message(session_id, user_input)
+    return jsonify({
+        'response': response['output'],
+        'session_id': session_id
+    })
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True)

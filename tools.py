@@ -244,6 +244,8 @@ class PaymentTool:
             return PaymentTool._process_upi(session_id, amount, upi_id, name, address, phone)
         elif method == "cod":
             return PaymentTool._process_cod(session_id, amount, name, address, phone)
+        elif method == "Cash on Delivery":
+            return PaymentTool._process_cod(session_id, amount, name, address, phone)
         else:
             return "Error: Invalid payment method."
 
