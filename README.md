@@ -12,6 +12,7 @@ PizzaOrder is a web and voice-based pizza ordering application that allows users
 - **Order Management**: Logs orders in a PostgreSQL database and tracks delivery status.
 
 ## Project Structure
+
 PizzaBot/
 │── .gitignore
 │── .env
@@ -19,18 +20,17 @@ PizzaBot/
 │── requirements.txt
 │── product_catalog.json
 │── README.md
-├── static/              # Static files (CSS, JS, images)
-│   ├── styles.css
-│   ├── script.js
-├── templates/           # HTML templates for the frontend
-│   ├── index.html
-├── audio_records/       # Folder for storing recorded audio files
-├── tools.py             # Utility/helper functions
-├── agent.py             # AI-powered PizzaAgent logic
-├── app.py               # Main Flask application
-├── app1.py              # Additional Flask app (consider merging if redundant)
-├── test.py              # Unit tests for the application
-
+│── static/                 # Static files (CSS, JS, images)
+│   │── styles.css
+│   │── script.js
+│── templates/              # HTML templates for the frontend
+│   │── index.html
+│── audio_records/          # Folder for storing recorded audio files
+│── tools.py                # Utility/helper functions
+│── agent.py                # AI-powered PizzaAgent logic
+│── app.py                  # Main Flask application
+│── app1.py                 # Additional Flask app (consider merging if redundant)
+│── test.py                 # Unit tests for the application
 
 ### Key Files
 
