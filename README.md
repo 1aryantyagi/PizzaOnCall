@@ -1,6 +1,12 @@
 # 🍕 PizzaOrder  
 
-PizzaOrder is a web and voice-based pizza ordering application that allows users to browse a menu, customize their orders, and place them seamlessly. The application supports both web-based interactions and voice-based ordering through Twilio.  
+PizzaOrder is a web and voice-based pizza ordering application that allows users to browse a menu, customize their orders, and place them effortlessly. The application supports both web-based interactions and voice-based ordering through Twilio, ensuring a seamless user experience.  
+
+🚀 **Live Demo:** [PizzaOrder Web App](https://pizzabot-production-e53f.up.railway.app/)  
+
+📞 **Voice Ordering:** Voice call will be activated on the number **+1 (331) 267-7135** (Currently in development).  
+
+Enjoy a hassle-free pizza ordering experience with real-time updates, customization options, and multiple ordering methods!
 
 ## 🚀 Features  
 
