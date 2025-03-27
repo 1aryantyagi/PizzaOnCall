@@ -1,6 +1,6 @@
-# 🍕 PizzaOrder  
+# 🍕 PizzaOnCall
 
-PizzaOrder is a web and voice-based pizza ordering application that allows users to browse a menu, customize their orders, and place them effortlessly. The application supports both web-based interactions and voice-based ordering through Twilio, ensuring a seamless user experience.  
+PizzaOnCall is a web and voice-based pizza ordering application that allows users to browse a menu, customize their orders, and place them effortlessly. The application supports both web-based interactions and voice-based ordering through Twilio, ensuring a seamless user experience.  
 
 🚀 **Live Demo:** [PizzaOrder Web App](https://pizzabot-production-e53f.up.railway.app/)  
 
