@@ -113,4 +113,5 @@ class PizzaAgent:
             ("human", user_input),
             ("ai", response["output"])
         ])
+        print("INSIDE AGENT", response)
         return response

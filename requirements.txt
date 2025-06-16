@@ -7,3 +7,5 @@ jason
 gunicorn
 langchain_openai
 psycopg2-binary
+vapi_server_sdk
+twilio
